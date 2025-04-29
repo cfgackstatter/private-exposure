@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+.env/
+
+# Data files
+data/*.parquet
+data/*.csv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dash/Plotly assets cache
+assets/__pycache__/
