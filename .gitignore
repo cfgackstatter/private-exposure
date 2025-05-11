@@ -20,3 +20,6 @@ Thumbs.db
 
 # Dash/Plotly assets cache
 assets/__pycache__/
+
+# Test notebook
+Test.ipynb

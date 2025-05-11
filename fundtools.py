@@ -1,8 +1,7 @@
 import logging
-import os
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 import pandas as pd
 import requests
@@ -51,6 +50,29 @@ def clean_dataframe_for_parquet(df: pd.DataFrame) -> pd.DataFrame:
     return df_clean
 
 
+def ensure_fund_name_populated(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Ensure that the 'fund_name' column is populated in the DataFrame.
+    If 'fund_name' is missing or null, copy values from 'series_name' if available.
+
+    Args:
+        df: DataFrame containing fund composition data.
+
+    Returns:
+        DataFrame with 'fund_name' populated.
+    """
+    df = df.copy()
+    if 'fund_name' not in df.columns and 'series_name' in df.columns:
+        df['fund_name'] = df['series_name']
+    elif 'fund_name' in df.columns and 'series_name' in df.columns:
+        # Fill missing fund_name values with series_name
+        df['fund_name'] = df['fund_name'].fillna(df['series_name'])
+    elif 'fund_name' not in df.columns:
+        # If fund_name is missing and series_name is also missing, create fund_name as None
+        df['fund_name'] = None
+    return df
+
+
 def update_fund_compositions(ticker: str) -> Optional[str]:
     """
     Download and update fund compositions for a given ticker.
@@ -80,6 +102,7 @@ def update_fund_compositions(ticker: str) -> Optional[str]:
             'class_id': None,
             'cik': None
         }
+
     if filings_df is None or filings_df.empty:
         logging.warning("No filings found.")
         return "No filings found."
@@ -111,6 +134,8 @@ def update_fund_compositions(ticker: str) -> Optional[str]:
 
     if new_compositions:
         all_new = pd.concat(new_compositions)
+        # Ensure fund_name is populated
+        all_new = ensure_fund_name_populated(all_new)
         all_new = clean_dataframe_for_parquet(all_new)
         if pq_path.exists():
             all_new = pd.concat([existing_df, all_new])
@@ -228,7 +253,7 @@ def get_nport_filings(class_cik: str) -> Optional[pd.DataFrame]:
             if series_match:
                 fund_info['fund_name'] = series_match.group(1).strip()
             else:
-                fund_info['fund_name'] = "Fund Name Not Found"
+                fund_info['fund_name'] = None
         table = soup.find('table', {'class': 'tableFile2'})
         if not table:
             logging.warning(f"No filings table found for {class_cik}")
@@ -495,13 +520,13 @@ def aggregate_fund_positions(
     """
     Aggregate multiple positions in the same fund for the same target exposure.
 
-    - Combines all rows for a fund (grouped by ticker, Fund Name, reporting_date, etc.)
+    - Combines all rows for a fund (grouped by ticker, fund_name, reporting_date, etc.)
     - For each group, concatenates the position names and their weights, sorted by size.
     - Adds a total percentage weight column, rounded to 2 decimals.
 
     Args:
-        df: DataFrame with columns including 'ticker', 'Fund Name', 'reporting_date', name_col, weight_col.
-        group_cols: Columns to group by (default: ['ticker', 'Fund Name', 'reporting_date']).
+        df: DataFrame with columns including 'ticker', 'fund_name', 'reporting_date', name_col, weight_col.
+        group_cols: Columns to group by (default: ['ticker', 'fund_name', 'reporting_date']).
         name_col: Name of the column with the security/position name.
         weight_col: Name of the column with the percentage weight.
 
@@ -509,7 +534,7 @@ def aggregate_fund_positions(
         Aggregated and sorted DataFrame.
     """
     if group_cols is None:
-        group_cols = ['ticker', 'Fund Name', 'reporting_date']
+        group_cols = ['ticker', 'fund_name', 'reporting_date']
 
     def combine_names_weights(subdf):
         # Sort by weight descending

@@ -1,4 +1,3 @@
-import requests
 from fundtools import (
     get_fund_identifiers,
     get_nport_filings,

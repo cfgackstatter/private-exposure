@@ -5,3 +5,7 @@ requests
 beautifulsoup4
 lxml
 pyarrow
+yfinance
+cvxpy
+pyscipopt
+flask-caching

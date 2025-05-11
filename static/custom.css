@@ -1,0 +1,164 @@
+/* Base styles and typography */
+body, .dash-table-container, .dash-table {
+    font-family: 'Segoe UI', Arial, sans-serif !important;
+    line-height: 1.6;
+}
+
+/* Container responsiveness */
+.container-fluid {
+    padding: 0 15px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Card styling */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 1rem 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Form elements */
+.form-control, .input-group {
+    margin-bottom: 1rem;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: #3f6ad8;
+    border-color: #3f6ad8;
+}
+
+.btn-primary:hover {
+    background-color: #2952c8;
+    border-color: #2952c8;
+}
+
+/* Table styling */
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner td,
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner th {
+    word-break: break-word !important;
+    font-family: 'Segoe UI', Arial, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 15px;
+    background: inherit !important;
+}
+
+.dash-cell {
+    white-space: pre-line !important;
+}
+
+.dash-cell-value {
+    white-space: pre-line !important;
+}
+
+.dash-table-container {
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    h4 {
+        font-size: 1.25rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group .btn {
+        margin-top: 0.5rem;
+        margin-left: 0 !important;
+        width: 100%;
+    }
+
+    .input-group .form-control,
+    .input-group .input-group-text {
+        width: 100%;
+    }
+    
+    .dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner td,
+    .dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner th {
+        font-size: 13px;
+        padding: 6px;
+    }
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 0 10px;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Animations */
+.alert {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Make buttons and inputs the same height */
+.input-group .btn,
+.input-group .form-control,
+.input-group .input-group-text {
+    line-height: 1.5;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
