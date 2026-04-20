@@ -43,7 +43,8 @@ class IngestService:
             self._session.add(fund)
             self._session.flush()
 
-        assert fund.id is not None
+        if fund.id is None:
+            raise RuntimeError(f"Failed to persist fund {ticker} — no id after flush")
 
         # caller-supplied series_id wins; otherwise use stored one only if it's a real SEC ID
         effective_series = series_id or (fund.series_id if _REAL_SERIES_ID.match(fund.series_id) else None)
