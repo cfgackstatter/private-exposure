@@ -3,8 +3,8 @@ const BASE = "http://localhost:8000";
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, options);
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail ?? "Request failed");
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.detail ?? `HTTP ${res.status}`);
   }
   if (res.status === 204) return undefined as T;
   return res.json();
@@ -40,4 +40,11 @@ export const api = {
     request<import("../types").FundSearchResult[]>(
       `/search?${new URLSearchParams({ q })}`
     ),
+
+  optimize: (req: import("../types").OptimizeRequest) =>
+    request<import("../types").OptimizeResponse>("/optimize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    }),
 };

@@ -84,11 +84,18 @@ def test_as_of_after_filing_returns_snapshot():
 
 
 @pytest.mark.integration
-def test_live_vtsax():
+@pytest.mark.timeout(60)
+def test_live_small_fund():
+    """Use a small fund to keep the integration test fast and reliable."""
     http = SecHttp("private-exposure your-email@example.com")
     try:
-        svc = HoldingsService(FundService(SecFundSource(http)), FilingsSource(http), NportSource(http))
-        snap = svc.get_portfolio("VTSAX")
+        svc = HoldingsService(
+            FundService(SecFundSource(http)),
+            FilingsSource(http),
+            NportSource(http),
+        )
+        # ARK Innovation ETF — ~30-40 holdings, fast to fetch
+        snap = svc.get_portfolio("ARKK")
         assert snap and len(snap.holdings) > 0
         assert all(h.issuer_name for h in snap.holdings)
     finally:

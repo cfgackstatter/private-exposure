@@ -15,6 +15,7 @@ class Fund(SQLModel, table=True):
     company_name: str
     series_name: str
     class_name: str
+    expense_ratio: float | None = Field(default=None)
 
     filings: list["Filing"] = Relationship(
         back_populates="fund",
