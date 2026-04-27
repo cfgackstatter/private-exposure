@@ -75,3 +75,51 @@ export interface FundSearchResult {
   matched_holdings: MatchedHolding[]
   report_date: string
 }
+
+export interface OptimizeRequest {
+  keywords: string[];
+  budget: number;
+  max_gross_leverage: number;
+  max_fund_weight: number | null;
+  borrow_cost: number;
+  financing_cost: number;
+  holding_period_months: number;
+  max_funds: number;
+  max_hedges: number;
+  short_cap: number;
+}
+
+export interface PositionOut {
+  name: string;
+  identifier: string | null;
+  weight: number;
+  dollar_amount: number;
+  annual_cost_pct: number;
+  alpha_pct: number | null;
+}
+
+export interface PortfolioMetricsOut {
+  target_exposure_pct: number;
+  non_target_long_pct: number;
+  short_total_pct: number;
+  net_non_target_pct: number;
+  unhedgeable_pct: number;
+  gross_leverage: number;
+  annual_carry_cost_pct: number;
+  long_count: number;
+  short_count: number;
+}
+
+export interface PortfolioOut {
+  label: string;
+  metrics: PortfolioMetricsOut;
+  longs: PositionOut[];
+  shorts: PositionOut[];
+  unhedgeable_names: string[];
+}
+
+export interface OptimizeResponse {
+  keywords: string[];
+  portfolios: PortfolioOut[];
+  warnings: string[];
+}

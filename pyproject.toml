@@ -7,15 +7,19 @@ name = "private-exposure"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+  "tenacity>=8.2",
   "httpx>=0.28.1",
   "sqlmodel>=0.0.38",
   "psycopg2-binary>=2.9.11",
   "fastapi>=0.115.0",
   "uvicorn>=0.34.0",
   "python-dotenv>=1.0",
+  "cvxpy>=1.4",
+  "yfinance>=0.2",
 ]
 
 [tool.pytest.ini_options]
+timeout = 60
 testpaths = ["tests"]
 markers = [
   "integration: tests that call live external services",
@@ -26,3 +30,9 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-timeout>=2.3",
+]

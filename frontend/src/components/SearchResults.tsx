@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import type { FundSearchResult } from "../types"
 import { identifier } from "../utils/holding";
+import { OptimizerPanel } from "./OptimizerPanel";
 
 interface Props {
   results: FundSearchResult[]
@@ -91,6 +92,7 @@ export function SearchResults({ results, query }: Props) {
           )}
         </div>
       ))}
+      <OptimizerPanel keywords={[query]} />
     </div>
   )
 }

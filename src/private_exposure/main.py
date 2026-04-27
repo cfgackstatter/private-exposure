@@ -6,6 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from private_exposure.api import admin, search
 from private_exposure.db.session import create_db_and_tables
+from private_exposure.api.optimize import router as optimize_router
+
+import logging
+logging.basicConfig(level=logging.WARNING)
+logging.getLogger("private_exposure").setLevel(logging.DEBUG)
 
 
 @asynccontextmanager
@@ -25,3 +30,4 @@ app.add_middleware(
 
 app.include_router(admin.router)
 app.include_router(search.router)
+app.include_router(optimize_router)

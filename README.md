@@ -1,7 +1,6 @@
 # Private Exposure
 
-Thematic fund holdings screener. Search across SEC N-PORT filings to find
-and analyze fund exposure to any company, sector, or topic.
+Thematic fund holdings screener. Search across SEC N-PORT filings to find and analyze fund exposure to any company, sector, or topic. Includes a portfolio optimizer that constructs long/short portfolios to maximize thematic exposure while hedging non-target risk.
 
 ## Stack
 
@@ -32,8 +31,8 @@ Copy `.env.example` to `.env` and set `DATABASE_URL` if your Postgres config dif
 
 | URL | Description |
 |---|---|
-| `http://localhost:5173/` | User search page |
-| `http://localhost:5173/admin` | Admin — ingest and manage funds |
+| `http://localhost:5173/` | Search & optimize |
+| `http://localhost:5173/admin` | Ingest and manage funds |
 | `http://localhost:8000/docs` | FastAPI auto-docs |
 
 ## Tests

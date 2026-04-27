@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from private_exposure.api.deps import get_ingest_service, get_session
-from private_exposure.api.schemas import FundOut, FilingOut, HoldingOut, IngestResult
+from private_exposure.schemas.holdings import FundOut, FilingOut, HoldingOut, IngestResult
 from private_exposure.db.models import Filing, Fund, Holding
 
 router = APIRouter(prefix="/admin", tags=["admin"])

@@ -1,45 +1,44 @@
 from __future__ import annotations
-
+import logging
 import httpx
-import time
-import threading
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, before_sleep_log
+
+logger = logging.getLogger(__name__)
+
+_retry_decorator = retry(
+    retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError)),
+    stop=stop_after_attempt(4),
+    wait=wait_exponential(multiplier=1, min=2, max=30),
+    before_sleep=before_sleep_log(logger, logging.WARNING),
+    reraise=True,
+)
 
 
 class SecHttp:
-    _MIN_INTERVAL = 0.12  # ~8 req/s, safely under the 10/s limit
+    def __init__(self, user_agent: str, timeout: float = 30.0) -> None:
+        self._client = httpx.Client(
+            headers={"User-Agent": user_agent},
+            timeout=httpx.Timeout(timeout, connect=10.0),
+            follow_redirects=True,
+        )
 
-    def __init__(self, user_agent: str) -> None:
-        self._client = httpx.Client(headers={"User-Agent": user_agent})
-        self._lock = threading.Lock()
-        self._last_request = 0.0
-
-    def _throttle(self) -> None:
-        with self._lock:
-            elapsed = time.monotonic() - self._last_request
-            wait = self._MIN_INTERVAL - elapsed
-            if wait > 0:
-                time.sleep(wait)
-            self._last_request = time.monotonic()
-
-    def _request(self, url: str) -> httpx.Response:
-        self._throttle()
-        r: httpx.Response | None = None
-        for attempt in range(3):
-            r = self._client.get(url)
-            if r.status_code == 429:
-                time.sleep(2 ** attempt)
-                continue
-            r.raise_for_status()
-            return r
-        assert r is not None
-        r.raise_for_status()
-        return r
-
-    def get_text(self, url: str) -> str:
-        return self._request(url).text
-
+    @_retry_decorator
     def get_json(self, url: str) -> dict:
-        return self._request(url).json()
+        r = self._client.get(url)
+        r.raise_for_status()
+        return r.json()
+
+    @_retry_decorator
+    def get_text(self, url: str) -> str:
+        r = self._client.get(url)
+        r.raise_for_status()
+        return r.text
 
     def close(self) -> None:
         self._client.close()
+
+    def __enter__(self) -> "SecHttp":
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
