@@ -1,14 +1,23 @@
 from __future__ import annotations
 import logging
 import httpx
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, before_sleep_log
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential, before_sleep_log
 
 logger = logging.getLogger(__name__)
 
+
+def _is_retryable(exc: BaseException) -> bool:
+    if isinstance(exc, (httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError)):
+        return True
+    if isinstance(exc, httpx.HTTPStatusError):
+        return exc.response.status_code in (429, 500, 502, 503, 504)
+    return False
+
+
 _retry_decorator = retry(
-    retry=retry_if_exception_type((httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError)),
-    stop=stop_after_attempt(4),
-    wait=wait_exponential(multiplier=1, min=2, max=30),
+    retry=retry_if_exception(_is_retryable),
+    stop=stop_after_attempt(6),
+    wait=wait_exponential(multiplier=2, min=10, max=60),
     before_sleep=before_sleep_log(logger, logging.WARNING),
     reraise=True,
 )
